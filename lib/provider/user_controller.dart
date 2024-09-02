@@ -13,6 +13,7 @@ class UserNotifier extends AsyncNotifier<List<User>> {
     return await fetchUsers();
   }
 
+  /// FETCHING USERS METHOD
   Future<List<User>> fetchUsers() async {
     try {
       return await apiServices.getUsers();
@@ -21,6 +22,7 @@ class UserNotifier extends AsyncNotifier<List<User>> {
     }
   }
 
+  /// RETRYING METHOD
   void retry() {
     state = const AsyncValue.loading();
     fetchUsers();
