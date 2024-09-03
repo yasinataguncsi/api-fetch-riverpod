@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/user.dart';
@@ -9,22 +11,23 @@ class UserNotifier extends AsyncNotifier<List<User>> {
   UserNotifier(this.apiServices);
 
   @override
-  Future<List<User>> build() async {
-    return await fetchUsers();
+  FutureOr<List<User>> build() async {
+    return fetchUsers();
   }
 
   /// FETCHING USERS METHOD
-  Future<List<User>> fetchUsers() async {
+  fetchUsers() async {
     try {
-      return await apiServices.getUsers();
+      state = const AsyncValue.loading();
+      state = AsyncData(await apiServices.getUsers());
     } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
       throw Exception('Failed to load users: $e');
     }
   }
 
   /// RETRYING METHOD
   void retry() {
-    state = const AsyncValue.loading();
     fetchUsers();
   }
 }

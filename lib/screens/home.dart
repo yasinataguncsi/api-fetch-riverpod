@@ -13,37 +13,15 @@ class UserListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('User List With Api/Riverpod')),
-      body: Builder(
-        builder: (context) {
-          if (asyncUserState.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (asyncUserState.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Error: ${asyncUserState.error}'),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () => ref.read(userProvider.notifier).retry(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          } else if (asyncUserState.hasValue) {
-            final users = asyncUserState.value!;
-            return ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final User user = users[index];
-                return UserCard(user: user);
-              },
-            );
-          } else {
-            // Fallback for unexpected states
-            return const Center(child: Text('Unexpected state'));
-          }
+      body: asyncUserState.when(
+        data: (d) {
+          return Text("$d");
+        },
+        error: (error, stackTrace) {
+          return Text(error.toString());
+        },
+        loading: () {
+          return const CircularProgressIndicator();
         },
       ),
     );
